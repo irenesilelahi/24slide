@@ -1,13 +1,7 @@
-# QA Wolf Take Home Assignment
+# QA 24Slide Test
 
-## Question 1
-Automated script using Playwright that validates the first 100 articles on Hacker News newest page are sorted from newest to oldest.
+Make simple automation code using Playwright, create it from scenarios that you think in terms of priority and effort need to be automated. Push the code in your Github and share it with us. 
 
-## Question 2
-I recorded a Loom video explaining why I want to work at QA Wolf and demonstrating the working script.
-
-**Loom Video Link:**
-[https://www.loom.com/share/f956f73743234810b7422dd41bdaef29?sid=30810584-8acb-424c-bfef-a0fd6d30a1d2]
 ---
 
 To run the script:

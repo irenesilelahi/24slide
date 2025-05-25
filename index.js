@@ -1,54 +1,31 @@
-const { chromium } = require("playwright");
-
-async function sortHackerNewsArticles() {
-  const browser = await chromium.launch({ headless: false });
-  const context = await browser.newContext({
-    userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-  });
-  const page = await context.newPage();
-  page.on('console', msg => console.log('PAGE LOG:', msg.text()));
-  page.on('pageerror', err => console.log('PAGE ERROR:', err));
-
-  let timestamps = [];
-  let url = "https://news.ycombinator.com/newest";
-
-  while (timestamps.length < 100) {
-    await page.goto(url, { waitUntil: "domcontentloaded", timeout: 60000 });
-    await new Promise(resolve => setTimeout(resolve, 2000)); // Delay to avoid rate-limiting
-
-    const pageTimestamps = await page.$$eval(".subtext > span.age", spans =>
-      spans.map(span => span.title)
-    );
-    if (pageTimestamps.length === 0) {
-      console.error("No timestamps found on page, stopping.");
-      break;
-    }
-
-    const dates = pageTimestamps.map(ts => new Date(ts));
-    timestamps.push(...dates);
-
-    const moreLink = await page.$("a.morelink");
-    if (!moreLink) {
-      console.error("No 'more' link found, stopping navigation.");
-      break;
-    }
-    url = await moreLink.evaluate(el => el.href);
-  }
-
-  timestamps = timestamps.slice(0, 100);
-
-  const sorted = [...timestamps].sort((a, b) => b - a);
-  const isSorted = timestamps.every((val, i) => val.getTime() === sorted[i].getTime());
-
-  if (isSorted) {
-    console.log("✅ The first 100 articles are sorted from newest to oldest.");
-  } else {
-    console.error("❌ The articles are NOT sorted correctly.");
-  }
-
-  await browser.close();
-}
+const { chromium } = require('playwright');
 
 (async () => {
-  await sortHackerNewsArticles();
+  const browser = await chromium.launch({ headless: false });
+  const context = await browser.newContext();
+  const page = await context.newPage();
+
+  // 1. Navigate to templates page
+  await page.goto('https://24slides.com/templates/featured');
+
+  // 2. Click on Login (adjust selector if needed)
+  await page.click('text=Login');
+
+  // 3. Fill in login credentials
+  await page.fill('input[name="email"]', 'your_test_email@example.com');
+  await page.fill('input[name="password"]', 'your_test_password');
+  await page.click('button[type="submit"]');
+
+  // 4. Wait for successful login (adjust selector to a post-login element)
+  await page.waitForSelector('text=My Templates'); // Update if needed
+
+  // 5. Click to download a template
+  await page.click('text=Download'); // You may need to refine this selector
+
+  // Optional: wait to confirm download
+  await page.waitForTimeout(2000);
+
+  console.log('Test completed: Login and download');
+
+  await browser.close();
 })();
